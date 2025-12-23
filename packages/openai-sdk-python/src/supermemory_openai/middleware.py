@@ -120,9 +120,11 @@ async def add_system_prompt(
         container_tag, query_text, api_key
     )
 
-    memory_count_static = len(memories_response.profile.get("static", []))
-    memory_count_dynamic = len(memories_response.profile.get("dynamic", []))
-    memory_count_search = len(memories_response.search_results.get("results", []))
+    profile = memories_response.profile or {}
+    search_results_data = memories_response.search_results or {}
+    memory_count_static = len(profile.get("static", []))
+    memory_count_dynamic = len(profile.get("dynamic", []))
+    memory_count_search = len(search_results_data.get("results", []))
 
     logger.info(
         "Memory search completed",
@@ -136,9 +138,9 @@ async def add_system_prompt(
     )
 
     deduplicated = deduplicate_memories(
-        static=memories_response.profile.get("static", []),
-        dynamic=memories_response.profile.get("dynamic", []),
-        search_results=memories_response.search_results.get("results", []),
+        static=profile.get("static", []),
+        dynamic=profile.get("dynamic", []),
+        search_results=search_results_data.get("results", []),
     )
 
     logger.debug(
